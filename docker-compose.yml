@@ -4,18 +4,19 @@ services:
     container_name: keycloak-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${KC_POSTGRES_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${KC_POSTGRES_POSTGRES_PASSWORD}
-      POSTGRES_DB: ${KC_POSTGRES_DB}
+      POSTGRES_USER: ${KC_POSTGRES_POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${KC_POSTGRES_POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${KC_POSTGRES_DB:-database}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - keycloack-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${KC_POSTGRES_POSTGRES_USER} -d ${KC_POSTGRES_DB}'"]
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${KC_POSTGRES_POSTGRES_USER:-postgres} -d ${KC_POSTGRES_DB:-database}'"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 5s
+    restart: unless-stopped
     deploy:
       resources:
         limits:
@@ -30,12 +31,12 @@ services:
     environment:
       KC_DB: postgres
       KC_DB_URL: "jdbc:postgresql://keycloak-postgres:5432/${KC_POSTGRES_DB}"
-      KC_DB_USERNAME: ${KC_POSTGRES_POSTGRES_USER}
-      KC_DB_PASSWORD: ${KC_POSTGRES_POSTGRES_PASSWORD}
+      KC_DB_USERNAME: ${KC_POSTGRES_POSTGRES_USER:-postgres}
+      KC_DB_PASSWORD: ${KC_POSTGRES_POSTGRES_PASSWORD:-password}
       KC_DB_SCHEMA: public
       QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY: true # https://github.com/keycloak/keycloak/issues/15255#issuecomment-1446166497
-      KEYCLOAK_ADMIN: ${KC_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD}
+      KEYCLOAK_ADMIN: ${KC_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-password}
       KC_HOSTNAME_STRICT: false
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HTTP_ENABLED: true
@@ -43,7 +44,7 @@ services:
       KC_HEALTH_ENABLED: true
     volumes:
      - keycloack-object-store:/ObjectStore/
-     - keycloack-themes:/opt/keycloak/themes/${KC_THEME_NAME}
+     - keycloack-themes:/opt/keycloak/themes/${KC_THEME_NAME:-theme}
     healthcheck: # https://gist.github.com/sarath-soman/5d9aec06953bbd0990c648605d4dba07
       test: ['CMD-SHELL', '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:8080/health/live']
       interval: 5s
