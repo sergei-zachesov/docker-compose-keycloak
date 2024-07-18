@@ -2,7 +2,6 @@ services:
   keycloak-postgres:
     image: library/postgres:15-alpine3.19
     container_name: keycloak-postgres
-    restart: unless-stopped
     environment:
       POSTGRES_USER: ${KC_POSTGRES_POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${KC_POSTGRES_POSTGRES_PASSWORD:-password}
