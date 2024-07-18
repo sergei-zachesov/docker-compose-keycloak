@@ -3,14 +3,14 @@ services:
     image: library/postgres:15-alpine3.19
     container_name: keycloak-postgres
     environment:
-      POSTGRES_USER: ${KC_POSTGRES_POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${KC_POSTGRES_POSTGRES_PASSWORD:-password}
+      POSTGRES_USER: ${KC_POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${KC_POSTGRES_PASSWORD:-password}
       POSTGRES_DB: ${KC_POSTGRES_DB:-database}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - keycloack-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${KC_POSTGRES_POSTGRES_USER:-postgres} -d ${KC_POSTGRES_DB:-database}'"]
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${KC_POSTGRES_USER:-postgres} -d ${KC_POSTGRES_DB:-database}'"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -30,8 +30,8 @@ services:
     environment:
       KC_DB: postgres
       KC_DB_URL: "jdbc:postgresql://keycloak-postgres:5432/${KC_POSTGRES_DB}"
-      KC_DB_USERNAME: ${KC_POSTGRES_POSTGRES_USER:-postgres}
-      KC_DB_PASSWORD: ${KC_POSTGRES_POSTGRES_PASSWORD:-password}
+      KC_DB_USERNAME: ${KC_POSTGRES_USER:-postgres}
+      KC_DB_PASSWORD: ${KC_POSTGRES_PASSWORD:-password}
       KC_DB_SCHEMA: public
       QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY: true # https://github.com/keycloak/keycloak/issues/15255#issuecomment-1446166497
       KEYCLOAK_ADMIN: ${KC_ADMIN:-admin}
