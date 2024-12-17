@@ -1,6 +1,6 @@
 services:
   keycloak-postgres:
-    image: library/postgres:15-alpine3.19
+    image: library/postgres:15.10-alpine3.21
     container_name: keycloak-postgres
     environment:
       POSTGRES_USER: ${KC_POSTGRES_USER:-postgres}
@@ -24,7 +24,7 @@ services:
       - keycloak-network
 
   keycloak:
-    image: quay.io/keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:26.0.7
     container_name: keycloak
     command: ["start"]
     environment:
