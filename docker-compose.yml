@@ -1,6 +1,6 @@
 services:
   keycloak-postgres:
-    image: library/postgres:15.10-alpine3.21
+    image: postgres:17.5-alpine3.22
     container_name: keycloak-postgres
     environment:
       POSTGRES_USER: ${KC_POSTGRES_USER:-postgres}
@@ -24,7 +24,7 @@ services:
       - keycloak-network
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.1.0
+    image: quay.io/keycloak/keycloak:26.3.1
     container_name: keycloak
     command: ["start"]
     environment:
@@ -42,8 +42,8 @@ services:
       KC_PROXY_HEADERS: xforwarded
       KC_HEALTH_ENABLED: true
     volumes:
-     - keycloack-object-store:/ObjectStore/
-     - keycloack-themes:/opt/keycloak/themes/${KC_THEME_NAME:-theme}
+      - keycloack-object-store:/ObjectStore/
+      - keycloack-themes:/opt/keycloak/themes/${KC_THEME_NAME:-theme}
     healthcheck: # https://gist.github.com/sarath-soman/5d9aec06953bbd0990c648605d4dba07?permalink_comment_id=5393364#gistcomment-5393364
       test: ['CMD-SHELL', '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live']
       interval: 5s
@@ -65,7 +65,7 @@ volumes:
     driver: local
   keycloack-themes:
     driver: local
-  
+
 networks:
   keycloak-network:
     driver: bridge
